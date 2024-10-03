@@ -1,0 +1,25 @@
+{
+  "name": "summary_service",
+  "version": "1.0.0",
+  "description": "Summary Web Service for Student and Software Engineering",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eomeuije/summary_service.git"
+  },
+  "keywords": [
+    "summary"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eomeuije/summary_service/issues"
+  },
+  "homepage": "https://github.com/eomeuije/summary_service#readme",
+  "dependencies": {
+    "express": "^4.21.0"
+  }
+}
