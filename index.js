@@ -1,15 +1,23 @@
 const express = require('express');
+const summaryRouter = require('./controller/summary/summaryController');
+const bodyParser = require('body-parser');
+const path = require('path');
 const app = express();
 
-// 포트 번호 설정
 const PORT = process.env.PORT || 3000;
 
-// 기본 라우트 설정
-app.get('/', (req, res) => {
-    res.send('Hello, Express!');
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use('/', express.static(path.join(__dirname, 'resources')));
+app.set('view engine', 'ejs');
+
+app.use('/summary', summaryRouter);
+
+app.get('/', async (req, res) => {
+    res.render('main');
 });
 
-// 서버 실행
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log('Server is running on ' + PORT)
 });

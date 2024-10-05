@@ -130,3 +130,9 @@ dist
 .pnp.*
 
 package-lock.json
+
+# python venv
+venv/
+
+# model
+korean_paper_summary*
