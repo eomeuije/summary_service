@@ -1,31 +1,17 @@
-const { execFile } = require('child_process');
-const path = require('path');
-
-const pythonScript = path.join(__dirname, '..', '..', 'venv', 'Scripts', 'python');
+const axios = require('axios');
 
 const postService = {
-    summarize: async (content) =>  new Promise((resolve, reject) => {
-
-        const args = [path.join(__dirname, 'summarize.py'), '-c', content];
-
-        execFile(pythonScript, args, (error, stdout, stderr) => {
-            if (error) {
-                reject(`Error: ${error.message}`);
-                return;
-            }
-            if (stderr) {
-                reject(`Stderr: ${stderr}`);
-                return;
-            }
-
-            try {
-                const result = JSON.parse(stdout);
-                resolve(result.summary);
-            } catch (parseError) {
-                reject(`Parsing Error: ${parseError.message}`);
+    summarize: async (content) => {
+        const response = await axios.post(process.env.FLASK_HOST + '/summarize', {
+            content: content
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
             }
         });
-    }),
+
+        return response.data.summary
+    },
 }
 
 module.exports = postService
