@@ -8,6 +8,11 @@ prompt> ./venv/bin/activate  # Mac/Linux
 (venv) prompt> deactivate
 ```
 
+## AI FLASK 서버 실행
+```sh
+prompt> ./venv/Scripts/python.exe ./ai/app.py
+```
+
 ## 요약 모델 다운로드
 [https://drive.google.com/file/d/1dbiG6syx4nwFmdt5V-MEIzFdGGPqCEkS/view?usp=sharing](https://drive.google.com/file/d/1dbiG6syx4nwFmdt5V-MEIzFdGGPqCEkS/view?usp=sharing)
 <br>다운로드 받은 zip을 ./summary_service 폴더 아래에 압축해제
