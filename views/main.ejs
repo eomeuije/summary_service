@@ -9,11 +9,39 @@
 <body>
     <div class="container">
         <div style="text-align: center; font-size: 300%;">
-            <p>
-                <h1>요약을 해요</h1>
-            </p>
-            <button onclick="window.location='/summary'">요약하기</button>
+            <h1>요약을 해요</h1>
+            <form id="audioForm" enctype="multipart/form-data">
+                <label for="audioFile">음성 파일 업로드:</label>
+                <input type="file" id="audioFile" name="audio" accept="audio/*">
+                <button type="button" onclick="uploadAudio()">음성 파일 변환</button>
+            </form>
+            <button onclick="window.location='/summary'">텍스트 요약하기</button>
         </div>
     </div>
+
+    <script>
+        function uploadAudio() {
+            const formData = new FormData();
+            const audioFile = document.getElementById("audioFile").files[0];
+            formData.append("audio", audioFile);
+
+            fetch("http://localhost:3001/upload_audio", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.text) {
+                    sessionStorage.setItem("convertedText", data.text);
+                    alert("음성 파일이 성공적으로 변환되었습니다. 텍스트 요약하기 버튼을 눌러 주세요.");
+                } else {
+                    alert("변환에 실패했습니다.");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        }
+    </script>
 </body>
 </html>
