@@ -15,17 +15,23 @@
                 <input type="file" id="audioFile" name="audio" accept="audio/*">
                 <button type="button" onclick="uploadAudio()">음성 파일 변환</button>
             </form>
+            <form id="docForm" enctype="multipart/form-data">
+                <label for="docFile">문서 파일 업로드:</label>
+                <input type="file" id="docFile" name="doc" accept="application/pdf, .hwp">
+                <br><br>
+                <button type="submit">문서 업로드</button>
+            </form>
             <button onclick="window.location='/summary'">텍스트 요약하기</button>
+            <div><textarea id="result" rows="25" cols="200"></textarea></div>
         </div>
     </div>
-
     <script>
         function uploadAudio() {
             const formData = new FormData();
             const audioFile = document.getElementById("audioFile").files[0];
-            formData.append("audio", audioFile);
+            formData.append("file", audioFile);
 
-            fetch("http://localhost:3001/upload_audio", {
+            fetch("http://localhost:3000/speach/upload", {
                 method: "POST",
                 body: formData
             })
@@ -42,6 +48,37 @@
                 console.error("Error:", error);
             });
         }
+    </script>
+    <script>
+        document.getElementById('docForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const fileInput = document.getElementById('docFile');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Please select a file.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/document/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                var textarea = document.getElementById("result");
+                data.content.forEach(ele => {
+                    textarea.value += ele.text + '\n';
+                })
+            })
+            .catch(error => {
+                alert('Error:', error);
+            });
+        });
     </script>
 </body>
 </html>

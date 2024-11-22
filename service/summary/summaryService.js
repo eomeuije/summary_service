@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const postService = {
+const summaryService = {
     summarize: async (content) => {
         const response = await axios.post(process.env.FLASK_HOST + '/summarize', {
             content: content
@@ -10,8 +10,8 @@ const postService = {
             }
         });
 
-        return response.data.summary
+        return response.data.summary;
     },
 }
 
-module.exports = postService
+module.exports = summaryService
