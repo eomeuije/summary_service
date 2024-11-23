@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>텍스트 요약</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #064663;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #05445E;
+            height: 80px;
+        }
+
+        .navbar button {
+            background-color: #189AB4;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            margin: 0 10px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .navbar button:hover {
+            background-color: #75E6DA;
+        }
+
+        .content {
+            background-color: #189AB4;
+            height: calc(100vh - 80px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading {
+            display: none;
+            width: 16px;
+            height: 16px;
+            border: 4px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 4px solid #3498db;
+            animation: spin 1s linear infinite;
+            margin-left: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .disabled {
+            background-color: grey;
+            cursor: not-allowed;
+        }
+
+        .form-control {
+            width: 80%;
+            max-width: 800px;
+            height: auto;
+            margin-top: 20px;
+        }
+
+        .btn {
+            margin-top: 10px;
+        }
+
+        #summaryOutput {
+            margin-top: 20px;
+            font-size: 18px;
+            color: white;
+            background-color: #05445E;
+            padding: 15px;
+            border-radius: 5px;
+            max-width: 800px;
+            width: 80%;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <button onclick="navigateTo('summary')">텍스트 요약</button>
+        <button onclick="navigateTo('doc')">문서</button>
+        <button onclick="navigateTo('voice')">음성</button>
+    </div>
+    <div class="content">
+        <h1>텍스트 요약</h1>
+        <form id="summaryForm">
+            <textarea class="form-control" id="content" rows="10" cols="50" style="width: 600px; height: 300px;" placeholder="요약 원문을 입력해주세요."></textarea>
+            <button type="submit" id="submit-btn" class="btn btn-primary">요약</button>
+            <div id="loading" class="loading"></div>
+        </form>
+        <div id="summaryResult">
+            <p id="summaryOutput"></p>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        function navigateTo(page) {
+            if (page === 'summary') {
+                window.location.href = '/summary-page';
+            } else if (page === 'doc') {
+                window.location.href = '/doc-upload';
+            } else if (page === 'voice') {
+                window.location.href = '/voice-upload';
+            }
+        }
+
+        $(document).ready(function() {
+            const convertedText = sessionStorage.getItem("convertedText");
+            if (convertedText) {
+                $('#content').val(convertedText);
+                sessionStorage.removeItem("convertedText");
+            }
+
+            $('#summaryForm').on('submit', function(e) {
+                const button = document.getElementById("submit-btn");
+                const loadingIcon = document.getElementById("loading");
+
+                button.disabled = true;
+                button.classList.add('disabled');
+                loadingIcon.style.display = "inline-block";
+
+                e.preventDefault();
+
+                var content = $('#content').val();
+
+                $.ajax({
+                    url: 'http://localhost:3001/summarize',
+                    type: 'POST',
+                    data: JSON.stringify({ content }),
+                    contentType: 'application/json',
+                    success: function(response) {
+                        $('#summaryOutput').text(response.summary);
+                        button.disabled = false;
+                        button.classList.remove('disabled');
+                        loadingIcon.style.display = "none";
+                    },
+                    error: function() {
+                        $('#summaryOutput').text('An error occurred while summarizing the text.');
+                        button.disabled = false;
+                        button.classList.remove('disabled');
+                        loadingIcon.style.display = "none";
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
