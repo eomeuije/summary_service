@@ -1,12 +1,15 @@
-const express = require('express');
 require('dotenv').config();
+const express = require('express');
+const session = require('express-session');
 const summaryRouter = require('./controller/summary/summaryController');
 const documentRouter = require('./controller/document/documentController');
 const speechController = require('./controller/STT/speachController');
+const passport = require('passport');
+const signRouter = require('./controller/sign/signController');
 const bodyParser = require('body-parser');
 const path = require('path');
-
 const app = express();
+
 const PORT = process.env.PORT || 8080;
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -14,14 +17,25 @@ app.use(bodyParser.json());
 app.use('/', express.static(path.join(__dirname, 'resources')));
 app.set('view engine', 'ejs');
 
+
+app.use(session({
+    secret: 'secret',
+    resave: false,
+    saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+
 // 라우터 설정
 app.use('/summary', summaryRouter);
 app.use('/document', documentRouter);
 app.use('/speach', speechController);
+app.use('/sign', signRouter);
 
 // 메인 페이지
-app.get('/', (req, res) => {
-    res.render('main');
+app.get('/', async (req, res) => {
+    res.render('main', { user: req.user });
 });
 
 // 문서 업로드 페이지

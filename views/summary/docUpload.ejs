@@ -48,6 +48,27 @@
             text-align: center;
             padding: 20px;
         }
+
+        .form-control {
+            border-radius: 10px !important;
+            width: 80%;
+            max-width: 800px;
+            height: 300px;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        .result-section {
+            margin-top: 20px;
+            width: 80%;
+            max-width: 800px;
+            background-color: #05445E;
+            padding: 15px;
+            border-radius: 5px;
+            color: white;
+            font-size: 18px;
+            word-wrap: break-word;
+        }
     </style>
 </head>
 <body>
@@ -64,7 +85,69 @@
             <br><br>
             <button type="submit">문서 업로드</button>
         </form>
-        <textarea id="result" rows="25" cols="100" placeholder="결과가 여기에 표시됩니다."></textarea>
+        <textarea class="form-control" id="result" rows="25" cols="100" placeholder="변환된 텍스트가 여기에 표시됩니다."></textarea>
+
+        <button type="button" id="summarize-doc" class="btn btn-secondary" style="margin-top: 10px;">요약하기</button>
+        
+        <!-- 요약 결과를 표시할 새로운 영역 -->
+        <div id="summaryResult" class="result-section" style="display: none;">
+            <h3>요약 결과</h3>
+            <p id="summaryOutput"></p>
+        </div>
+    </div>
+
+    <script>
+        function navigateTo(page) {
+            if (page === 'summary') {
+                window.location.href = '/summary-page';
+            } else if (page === 'doc') {
+                window.location.href = '/doc-upload';
+            } else if (page === 'voice') {
+                window.location.href = '/voice-upload';
+            }
+        }
+
+        document.getElementById('docForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const fileInput = document.getElementById('docFile').files[0];
+            const formData = new FormData();
+            formData.append('file', fileInput);
+            fetch('/document/upload', {
+                method: 'POST',
+                body: formData,
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    const textarea = document.getElementById('result');
+                    textarea.value = data.content.map((item) => item.text).join('\\n');
+                })
+                .catch((error) => alert('Error: ' + error));
+        });
+
+        document.getElementById('summarize-doc').addEventListener('click', function() {
+            const content = document.getElementById('result').value;
+            if (!content.trim()) {
+                alert('요약할 텍스트가 없습니다.');
+                return;
+            }
+            fetch('http://localhost:3001/summarize', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const summaryResult = document.getElementById('summaryResult');
+                const summaryOutput = document.getElementById('summaryOutput');
+                summaryOutput.textContent = data.summary || '요약에 실패했습니다.';
+                summaryResult.style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('요약 중 오류가 발생했습니다.');
+            });
+        });
+    </script>
     </div>
     <script>
         function navigateTo(page) {

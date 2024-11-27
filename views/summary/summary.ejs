@@ -49,47 +49,27 @@
             padding: 40px;
         }
 
-        .loading {
-            display: none;
-            width: 16px;
-            height: 16px;
-            border: 4px solid #f3f3f3;
-            border-radius: 50%;
-            border-top: 4px solid #3498db;
-            animation: spin 1s linear infinite;
-            margin-left: 8px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .disabled {
-            background-color: grey;
-            cursor: not-allowed;
-        }
-
         .form-control {
             width: 80%;
             max-width: 800px;
-            height: auto;
+            height: 300px;
             margin-top: 20px;
+            font-size: 16px;
         }
 
         .btn {
             margin-top: 10px;
         }
 
-        #summaryOutput {
+        .result-section {
             margin-top: 20px;
-            font-size: 18px;
-            color: white;
+            width: 80%;
+            max-width: 800px;
             background-color: #05445E;
             padding: 15px;
             border-radius: 5px;
-            max-width: 800px;
-            width: 80%;
+            color: white;
+            font-size: 18px;
             word-wrap: break-word;
         }
     </style>
@@ -103,11 +83,12 @@
     <div class="content">
         <h1>텍스트 요약</h1>
         <form id="summaryForm">
-            <textarea class="form-control" id="content" rows="10" cols="50" style="width: 600px; height: 300px;" placeholder="요약 원문을 입력해주세요."></textarea>
+            <textarea class="form-control" id="content" rows="25" cols="100" placeholder="요약 원문을 입력해주세요."></textarea>
             <button type="submit" id="submit-btn" class="btn btn-primary">요약</button>
-            <div id="loading" class="loading"></div>
         </form>
-        <div id="summaryResult">
+        <!-- 요약 결과를 표시할 새로운 영역 -->
+        <div id="summaryResult" class="result-section" style="display: none;">
+            <h3>요약 결과</h3>
             <p id="summaryOutput"></p>
         </div>
     </div>
@@ -132,34 +113,35 @@
             }
 
             $('#summaryForm').on('submit', function(e) {
+                e.preventDefault();
+                const content = $('#content').val();
+                if (!content.trim()) {
+                    alert('요약할 텍스트를 입력하세요.');
+                    return;
+                }
                 const button = document.getElementById("submit-btn");
-                const loadingIcon = document.getElementById("loading");
-
                 button.disabled = true;
                 button.classList.add('disabled');
-                loadingIcon.style.display = "inline-block";
 
-                e.preventDefault();
-
-                var content = $('#content').val();
-
-                $.ajax({
-                    url: 'http://localhost:3001/summarize',
-                    type: 'POST',
-                    data: JSON.stringify({ content }),
-                    contentType: 'application/json',
-                    success: function(response) {
-                        $('#summaryOutput').text(response.summary);
-                        button.disabled = false;
-                        button.classList.remove('disabled');
-                        loadingIcon.style.display = "none";
-                    },
-                    error: function() {
-                        $('#summaryOutput').text('An error occurred while summarizing the text.');
-                        button.disabled = false;
-                        button.classList.remove('disabled');
-                        loadingIcon.style.display = "none";
-                    }
+                fetch('http://localhost:3001/summarize', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const summaryResult = document.getElementById('summaryResult');
+                    const summaryOutput = document.getElementById('summaryOutput');
+                    summaryOutput.textContent = data.summary || '요약에 실패했습니다.';
+                    summaryResult.style.display = 'block';
+                    button.disabled = false;
+                    button.classList.remove('disabled');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('요약 중 오류가 발생했습니다.');
+                    button.disabled = false;
+                    button.classList.remove('disabled');
                 });
             });
         });

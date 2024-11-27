@@ -52,6 +52,33 @@
             transform: translateX(-50%) translateY(10px); /* 화살표 위로 이동 */
         }
 
+        /* 헤더 스타일 */
+        .header-head {
+            background-color: #05445E;
+            color: white;
+            padding: 10px;
+            text-align: right;
+        }
+
+        .header-locate header span, .header-locate header a {
+            color: white;
+            margin-right: 20px;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .logout-button {
+            background-color: transparent;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .logout-button:hover {
+            text-decoration: underline;
+        }
+
         /* 콘텐츠 스타일 */
         .content {
             background: linear-gradient(135deg, #189AB4, #75E6DA); /* 그라데이션 배경 */
@@ -81,42 +108,24 @@
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
             margin-bottom: 40px;
         }
-
-        /* 배경 요소 (원형 애니메이션) */
-        .background-circles {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        .circle {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            animation: move 10s linear infinite;
-            opacity: 0.8;
-        }
-
-        /* 애니메이션 */
-        @keyframes move {
-            0% {
-                transform: translateY(100vh) translateX(0);
-                opacity: 0.8;
-            }
-            50% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-100vh) translateX(20px);
-                opacity: 0.3;
-            }
-        }
     </style>
 </head>
 <body>
+    <!-- 헤더 추가 -->
+    <div class="header-head">
+        <div class="header-locate">
+            <header>
+                <% if (user) { %>
+                    <span><span id="user-name"><%= user.NAME %></span> 님</span>
+                    <button class="logout-button" onclick="logout()">로그아웃</button>
+                <% } else { %>
+                    <a href="/sign/in">로그인</a>
+                    <a href="/sign/up">회원가입</a>
+                <% } %>
+            </header>
+        </div>
+    </div>
+
     <div class="navbar">
         <button onclick="navigateTo('summary')">텍스트 요약</button>
         <button onclick="navigateTo('doc')">문서</button>
@@ -125,17 +134,21 @@
     <div class="content">
         <h1>다목적 AI 요약 서비스에 오신 것을 환영합니다.</h1>
         <p>상단에 있는 원하는 요약 서비스를 선택해주세요.</p>
-        <!-- 배경 애니메이션 -->
-        <div class="background-circles">
-            <div class="circle" style="width: 100px; height: 100px; left: 20%; animation-delay: 0s;"></div>
-            <div class="circle" style="width: 150px; height: 150px; left: 40%; animation-delay: 2s;"></div>
-            <div class="circle" style="width: 200px; height: 200px; left: 60%; animation-delay: 4s;"></div>
-            <div class="circle" style="width: 80px; height: 80px; left: 80%; animation-delay: 1s;"></div>
-            <div class="circle" style="width: 120px; height: 120px; left: 50%; animation-delay: 3s;"></div>
-        </div>
     </div>
 
     <script>
+        function logout() {
+            // 로그아웃 로직 처리
+            fetch('/logout', { method: 'POST' })
+                .then(() => {
+                    window.location.href = '/';
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('로그아웃에 실패했습니다.');
+                });
+        }
+
         function navigateTo(page) {
             if (page === 'summary') {
                 window.location.href = '/summary-page';
