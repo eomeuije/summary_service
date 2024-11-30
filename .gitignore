@@ -141,3 +141,5 @@ korean_paper_summary*
 uploads/
 
 .ipynb_checkpoints/
+
+__pycache__/

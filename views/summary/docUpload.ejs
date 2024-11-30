@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <title>문서 업로드</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/base.css">
+    <script src="/js/base.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #064663;
+        }
+
+        .content {
+            background-color: #189AB4;
+            min-height: calc(100vh - 80px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .doc-results {
+            width: 40%;
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .doc-page {
+            font-size: medium;
+            margin-top: 5px;
+        }
+
+        .form-control {
+            border-radius: 10px !important;
+            width: 100%;
+            height: 150px;
+            font-size: 16px;
+        }
+
+        .result-section {
+            margin-top: 20px;
+            width: 80%;
+            max-width: 800px;
+            background-color: #05445E;
+            padding: 15px;
+            border-radius: 5px;
+            color: white;
+            font-size: 18px;
+            word-wrap: break-word;
+        }
+
+        /* 다크 모드 스타일 */
+        body.dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        body.dark-mode .navbar {
+            background-color: #222831;
+        }
+
+        body.dark-mode .navbar button {
+            background-color: #393E46;
+        }
+
+        body.dark-mode .content {
+            background-color: #393E46;
+        }
+
+        body.dark-mode .result-section {
+            background-color: #222831;
+        }
+
+        .dark-mode-toggle {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            width: 40px;
+            height: 40px;
+            background-color: #ffffff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black"%3E%3Cpath d="M12 2a10 10 0 1 0 10 10 8 8 0 0 1-10-10z"%3E%3C/path%3E%3C/svg%3E');
+            background-size: 60%;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        body.dark-mode .dark-mode-toggle {
+            background-color: #393E46;
+            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"%3E%3Cpath d="M12 2a10 10 0 1 0 10 10 8 8 0 0 1-10-10z"%3E%3C/path%3E%3C/svg%3E');
+        }
+    </style>
+</head>
+<body>
+    <!-- 다크 모드 토글 버튼 -->
+    <button class="dark-mode-toggle" onclick="toggleDarkMode()"></button>
+
+    <div class="header-head">
+        <div class="header-locate">
+            <header>
+                <% if (user) { %>
+                    <span><span id="user-name"><%= user.NAME %></span> 님</span>
+                    <button class="logout-button" onclick="logout()">로그아웃</button>
+                <% } else { %>
+                    <a href="/sign/in">로그인</a>
+                    <a href="/sign/up">회원가입</a>
+                <% } %>
+            </header>
+        </div>
+    </div>
+    <div class="navbar">
+        <button onclick="navigateTo('main')">메인화면</button>
+        <button onclick="navigateTo('summary')">텍스트 요약</button>
+        <button onclick="navigateTo('doc')">문서</button>
+        <button <% if (user) { %>
+                    <% if (user.MEMBERSHIP_TIER > 0) { %>
+                        onclick="navigateTo('voice')"
+                    <% } else { %>
+                        onclick="voiceNotMemberAlert()"
+                    <% } %>
+                <% } else { %>
+                    onclick="voiceNotLogginAlert()"
+                <% } %>>음성</button>
+    </div>
+    <div class="content">
+        <h1>문서 업로드</h1>
+        <form id="docForm" enctype="multipart/form-data">
+            <label for="docFile">문서 파일 업로드:</label>
+            <input type="file" id="docFile" name="doc" accept="application/pdf">
+            <br><br>
+            <button type="submit">문서 업로드</button>
+        </form>
+        <div class="max-size-div"><span class="max-size-span">* 문서는 10MB까지 업로드 가능합니다.</span></div>
+        <button type="button" id="summarize-doc" class="btn btn-secondary summary-disabled" style="margin-top: 10px;">요약하기</button>
+        <div id="summary-loading" class="summary-loading"></div>
+        <div id="doc-results" class="doc-results">
+        </div>
+
+    </div>
+
+    <script>
+        document.getElementById('docForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const fileInput = document.getElementById('docFile').files[0];
+            const formData = new FormData();
+            formData.append('file', fileInput);
+            fetch('/document/upload', {
+                method: 'POST',
+                body: formData,
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    const container = document.getElementById("doc-results");
+                    container.replaceChildren();
+                    data.content.forEach((item, index) => {
+                        const span = document.createElement("span");
+                        span.innerHTML = '페이지' + (index + 1) + '.';
+                        span.classList.add('doc-page');
+                        container.appendChild(span);
+
+                        const textarea = document.createElement("textarea");
+                        textarea.value = item.text;
+                        textarea.classList.add('form-control');
+                        container.appendChild(textarea);
+                    });
+                    const btn = document.querySelector("#summarize-doc");
+                    btn.classList.remove('summary-disabled');
+                    btn.disabled = false;
+                })
+                .catch((error) => alert('Error: ' + error));
+        });
+
+        document.getElementById('summarize-doc').addEventListener('click', function() {
+            if (this.className.includes('summary-disabled')) return;
+            
+            const loadingIcon = document.getElementById("summary-loading");
+            const summaryBtn = document.querySelector("#summarize-doc");
+            summaryBtn.disabled = true;
+            summaryBtn.classList.add('disabled');
+            loadingIcon.style.display = "inline-block";
+
+            var textareas = document.querySelectorAll(".form-control");
+            var count = 0;
+            for (const textarea of textareas) {
+                var content = textarea.value;
+                if (!content.trim()) {
+                    return;
+                }
+                fetch('/summary', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    count++;
+                    textarea.value = data.summary || '요약에 실패했습니다.';
+                    if (count >= textareas.length) {
+                        const p = document.getElementById("doc-results");
+                        var f = document.createElement('textarea');
+                        f.classList.add('form-control');
+                        f.placeholder = '전체 요약 결과';
+                        p.insertBefore(f, p.firstChild);
+
+                        var pages = document.getElementsByClassName('form-control');
+                        var content = '';
+                        for (let ele of pages) {
+                            content += ele.value;
+                        }
+                        content = content.slice(0, 3000);
+                        fetch('/summary', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ content })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            f.value = data.summary || '요약에 실패했습니다.';
+                            summaryBtn.disabled = true;
+                            loadingIcon.style.display = "none";
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            if (count >= textareas.length) {         
+                                summaryBtn.disabled = false;
+                                summaryBtn.classList.remove('summary-disabled');
+                                loadingIcon.style.display = "none";               
+                                alert('요약 중 오류가 발생했습니다.');
+                            }
+                        });
+                    }
+                })
+                .catch(error => {
+                    count++;
+                    console.error('Error:', error);
+                    if (count >= textareas.length) {                        
+                        alert('요약 중 오류가 발생했습니다.');
+                        summaryBtn.disabled = false;
+                        summaryBtn.classList.remove('summary-disabled');
+                        loadingIcon.style.display = "none";
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

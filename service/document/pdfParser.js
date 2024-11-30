@@ -14,7 +14,7 @@ const pdfParser = {
                 const pagesText = pdfData.Pages.map((page, index) => {
                     const pageText = page.Texts.map((textItem) => {
                         return decodeURIComponent(textItem.R[0].T);
-                    }).join(' ');
+                    }).join('');
     
                     return {
                         page: index + 1,

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+  <style>
+    .card {
+      width: 400px;
+      margin: 0 auto;
+      border: none;
+    }
+    #confirm {
+        color: red;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="card-body">
+        <form id="signup-form" action="/sign/auth/up" method="POST">
+          <div class="form-group">
+            <label for="username">닉네임</label>
+            <input type="text" class="form-control" value="<%= name %>" id="name" name="name" required>
+          </div>
+          <button type="submit" class="button">가입</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

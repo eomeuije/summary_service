@@ -1,84 +1,106 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <title>Summary Web Service</title>
+    <title>Main Page</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/base.css">
+    <script src="/js/base.js"></script>
+    <style>
+
+        .content {
+            background: linear-gradient(135deg, #189AB4, #75E6DA);
+            height: calc(100vh - 80px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            font-size: 24px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content h1 {
+            font-size: 32px;
+            color: white;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .content p {
+            font-size: 20px;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+            margin-bottom: 40px;
+        }
+
+        /* 다크 모드 스타일 */
+        body.dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        body.dark-mode .navbar {
+            background-color: #222831;
+        }
+
+        body.dark-mode .navbar button {
+            background-color: #393E46;
+        }
+
+        body.dark-mode .header-head {
+            background-color: #222831;
+        }
+
+        body.dark-mode .content {
+            background: linear-gradient(135deg, #393E46, #222831);
+        }
+        
+        body.dark-mode .dark-mode-toggle {
+            background-color: #393E46;
+            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"%3E%3Cpath d="M12 2a10 10 0 1 0 10 10 8 8 0 0 1-10-10z"%3E%3C/path%3E%3C/svg%3E');
+        }
+        
+    </style>
 </head>
 <body>
-    <div class="container">
-        <div style="text-align: center; font-size: 300%;">
-            <h1>요약을 해요</h1>
-            <form id="audioForm" enctype="multipart/form-data">
-                <label for="audioFile">음성 파일 업로드:</label>
-                <input type="file" id="audioFile" name="audio" accept="audio/*">
-                <button type="button" onclick="uploadAudio()">음성 파일 변환</button>
-            </form>
-            <form id="docForm" enctype="multipart/form-data">
-                <label for="docFile">문서 파일 업로드:</label>
-                <input type="file" id="docFile" name="doc" accept="application/pdf, .hwp">
-                <br><br>
-                <button type="submit">문서 업로드</button>
-            </form>
-            <button onclick="window.location='/summary'">텍스트 요약하기</button>
-            <div><textarea id="result" rows="25" cols="200"></textarea></div>
+    <!-- 다크 모드 토글 버튼 -->
+    <button class="dark-mode-toggle" onclick="toggleDarkMode()"></button>
+
+    <!-- 헤더 추가 -->
+    <div class="header-head">
+        <div class="header-locate">
+            <header>
+                <% if (user) { %>
+                    <span><span id="user-name"><%= user.NAME %></span> 님</span>
+                    <button class="logout-button" onclick="logout()">로그아웃</button>
+                <% } else { %>
+                    <a href="/sign/in">로그인</a>
+                    <a href="/sign/up">회원가입</a>
+                <% } %>
+            </header>
         </div>
     </div>
-    <script>
-        function uploadAudio() {
-            const formData = new FormData();
-            const audioFile = document.getElementById("audioFile").files[0];
-            formData.append("file", audioFile);
 
-            fetch("http://localhost:3000/speach/upload", {
-                method: "POST",
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.text) {
-                    sessionStorage.setItem("convertedText", data.text);
-                    alert("음성 파일이 성공적으로 변환되었습니다. 텍스트 요약하기 버튼을 눌러 주세요.");
-                } else {
-                    alert("변환에 실패했습니다.");
-                }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-            });
-        }
-    </script>
-    <script>
-        document.getElementById('docForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const fileInput = document.getElementById('docFile');
-            const file = fileInput.files[0];
-
-            if (!file) {
-                alert('Please select a file.');
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('file', file);
-
-            fetch('/document/upload', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                var textarea = document.getElementById("result");
-                data.content.forEach(ele => {
-                    textarea.value += ele.text + '\n';
-                })
-            })
-            .catch(error => {
-                alert('Error:', error);
-            });
-        });
-    </script>
+    <div class="navbar">
+        <button onclick="navigateTo('summary')">텍스트 요약</button>
+        <button onclick="navigateTo('doc')">문서</button>
+        <button <% if (user) { %>
+                    <% if (user.MEMBERSHIP_TIER > 0) { %>
+                        onclick="navigateTo('voice')"
+                    <% } else { %>
+                        onclick="voiceNotMemberAlert()"
+                    <% } %>
+                <% } else { %>
+                    onclick="voiceNotLogginAlert()"
+                <% } %>>음성</button>
+    </div>
+    <div class="content">
+        <h1>다목적 AI 요약 서비스에 오신 것을 환영합니다.</h1>
+        <p>상단에 있는 원하는 요약 서비스를 선택해주세요.</p>
+    </div>
 </body>
 </html>
