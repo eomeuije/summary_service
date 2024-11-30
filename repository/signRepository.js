@@ -5,7 +5,7 @@ const signRepository = {
         try {
             const connection = await pool.getConnection();
             const result = await connection.query(`
-SELECT OWNER_CODE, ID, PASSWORD, NAME
+SELECT OWNER_CODE, ID, PASSWORD, NAME, MEMBERSHIP_TIER
 FROM USER
 WHERE ID = ?
 `, [id]);

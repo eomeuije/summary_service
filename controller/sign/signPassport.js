@@ -30,7 +30,8 @@ passport.use(new LocalStrategy({usernameField: 'id', passwordField: 'password'},
     await signService.correctPasswordOrThrow(password, user.PASSWORD);
     const u = {
         OWNER_CODE: user.OWNER_CODE,
-        NAME: user.NAME
+        NAME: user.NAME,
+        MEMBERSHIP_TIER: user.MEMBERSHIP_TIER
     }
     users.push(u);
     return done(null, u); // 로그인된 회원 저장
@@ -73,4 +74,4 @@ function isNotLoggedIn(req, res, next) {
     res.redirect('/');
 }
 
-module.exports = { passportRouter, isLoggedIn, isNotLoggedIn };
+module.exports = { passportRouter, isLoggedIn, isNotLoggedIn, users };

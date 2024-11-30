@@ -40,17 +40,22 @@ app.get('/', async (req, res) => {
 
 // 문서 업로드 페이지
 app.get('/doc-upload', (req, res) => {
-    res.render('summary/docUpload'); // summary 폴더의 docUpload.ejs 렌더링
+    res.render('summary/docUpload', { user: req.user }); // summary 폴더의 docUpload.ejs 렌더링
 });
 
 // 음성 업로드 페이지
 app.get('/voice-upload', (req, res) => {
-    res.render('summary/voice'); // summary 폴더의 voice.ejs 렌더링
+    const user = req.user;
+    if (user && user.MEMBERSHIP_TIER > 0) {
+        res.render('summary/voice', { user }); // summary 폴더의 voice.ejs 렌더링        
+    } else {
+        res.redirect('/');
+    }
 });
 
 // 텍스트 업로드 페이지
 app.get('/summary-page', (req, res) => {
-    res.render('summary/summary'); // summary 폴더의 summary.ejs 렌더링
+    res.render('summary/summary', { user: req.user }); // summary 폴더의 summary.ejs 렌더링
 });
 
 

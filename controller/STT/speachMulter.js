@@ -26,7 +26,7 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  const allowedExtensions = [".mp3", "aac", "ac3", "ogg", "flac", "wav", "m4a"];
+  const allowedExtensions = [".mp3", ".aac", ".ac3", ".ogg", ".flac", ".wav", ".m4a"];
   const ext = path.extname(file.originalname).toLowerCase();
   if (allowedExtensions.includes(ext)) {
     cb(null, true);
@@ -38,7 +38,7 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
     storage,
     fileFilter,
-    limits: { fileSize: 1024 * 1024 * 1024 }, // 1GB 제한
+    limits: { fileSize: 100 * 1024 * 1024 }, // 1GB 제한
   });
 
   

@@ -2,11 +2,11 @@ const express = require("express");
 const router = express.Router();
 const passport = require('passport');
 const signService = require('../../service/sign/signService');
-const { isLoggedIn, isNotLoggedIn } = require("./signPassport");
+const { isLoggedIn, isNotLoggedIn, users } = require("./signPassport");
 
 router.get('/in', isNotLoggedIn, async (req, res) => {
-    res.render('sign/in');
-  });
+  res.render('sign/in');
+});
 
 router.post('/in', isNotLoggedIn, passport.authenticate('local', {
   successRedirect: '/',
@@ -47,7 +47,7 @@ router.post('/auth/up', async (req, res) => {
       return next(err);
     }
     return res.redirect('/');
-});
+  });
 });
 
 router.get('/up', isNotLoggedIn, (req, res) => {
@@ -65,10 +65,15 @@ router.post('/up', isNotLoggedIn, async (req, res) => {
 });
 
 router.post('/logout', isLoggedIn, (req, res) => {
+  const o = req.user.OWNER_CODE
   req.logout(err => {
     if (err) {
       return next(err);
     } else {
+      const index = users.findIndex(item => o === item.OWNER_CODE);
+      if (index !== -1) {
+        users.splice(index, 1); // 해당 인덱스의 객체 제거
+      }
       res.send('success');
     }
   });
