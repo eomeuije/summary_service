@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/base.css">
+    <script src="/js/base.js"></script>
     <style>
         /* 메뉴 스타일 */
         .navbar {
@@ -127,24 +128,6 @@
         body.dark-mode .content {
             background: linear-gradient(135deg, #393E46, #222831);
         }
-
-        /* 다크 모드 버튼 스타일 */
-        .dark-mode-toggle {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            width: 40px;
-            height: 40px;
-            background-color: #ffffff;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black"%3E%3Cpath d="M12 2a10 10 0 1 0 10 10 8 8 0 0 1-10-10z"%3E%3C/path%3E%3C/svg%3E');
-            background-size: 60%;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
         
         body.dark-mode .dark-mode-toggle {
             background-color: #393E46;
@@ -181,32 +164,5 @@
         <h1>다목적 AI 요약 서비스에 오신 것을 환영합니다.</h1>
         <p>상단에 있는 원하는 요약 서비스를 선택해주세요.</p>
     </div>
-
-    <script>
-        function logout() {
-            fetch('/logout', { method: 'POST' })
-                .then(() => {
-                    window.location.href = '/';
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert('로그아웃에 실패했습니다.');
-                });
-        }
-
-        function navigateTo(page) {
-            if (page === 'summary') {
-                window.location.href = '/summary-page';
-            } else if (page === 'doc') {
-                window.location.href = '/doc-upload';
-            } else if (page === 'voice') {
-                window.location.href = '/voice-upload';
-            }
-        }
-
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-        }
-    </script>
 </body>
 </html>

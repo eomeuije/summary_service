@@ -1,0 +1,32 @@
+body {
+    margin: 0px;
+}
+
+
+/* 다크 모드 버튼 스타일 */
+.dark-mode-toggle {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    width: 40px;
+    height: 40px;
+    background-color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black"%3E%3Cpath d="M12 2a10 10 0 1 0 10 10 8 8 0 0 1-10-10z"%3E%3C/path%3E%3C/svg%3E');
+    background-size: 60%;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 99;
+}
+
+
+.max-size-div {
+    align-content: start;
+    text-align: left;
+}
+.max-size-span {
+    font-size: medium;
+}

@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/base.css">
+    <script src="/js/base.js"></script>
     <style>
         body {
             margin: 0;
@@ -38,7 +39,7 @@
 
         .content {
             background-color: #189AB4;
-            height: calc(100vh - 80px);
+            min-height: calc(100vh - 80px);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -49,11 +50,20 @@
             padding: 20px;
         }
 
+        .doc-results {
+            width: 40%;
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .doc-page {
+            font-size: medium;
+        }
+
         .form-control {
             border-radius: 10px !important;
-            width: 80%;
-            max-width: 800px;
-            height: 300px;
+            width: 100%;
+            height: 150px;
             margin-top: 20px;
             font-size: 16px;
         }
@@ -129,37 +139,19 @@
         <h1>문서 업로드</h1>
         <form id="docForm" enctype="multipart/form-data">
             <label for="docFile">문서 파일 업로드:</label>
-            <input type="file" id="docFile" name="doc" accept="application/pdf, .hwp">
+            <input type="file" id="docFile" name="doc" accept="application/pdf">
             <br><br>
             <button type="submit">문서 업로드</button>
         </form>
-        <textarea class="form-control" id="result" rows="25" cols="100" placeholder="변환된 텍스트가 여기에 표시됩니다."></textarea>
-
+        <div class="max-size-div"><span class="max-size-span">* 문서는 10MB까지 업로드 가능합니다.</span></div>
         <button type="button" id="summarize-doc" class="btn btn-secondary" style="margin-top: 10px;">요약하기</button>
-        
-        <div id="summaryResult" class="result-section" style="display: none;">
-            <h3>요약 결과</h3>
-            <p id="summaryOutput"></p>
+        <div class="doc-results">
+            <textarea class="form-control" id="result" placeholder="변환된 텍스트가 여기에 표시됩니다."></textarea>
         </div>
+
     </div>
 
     <script>
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-        }
-
-        function navigateTo(page) {
-            if (page === 'main') {
-                window.location.href = 'http://localhost:3000/';
-            } else if (page === 'summary') {
-                window.location.href = '/summary-page';
-            } else if (page === 'doc') {
-                window.location.href = '/doc-upload';
-            } else if (page === 'voice') {
-                window.location.href = '/voice-upload';
-            }
-        }
-
         document.getElementById('docForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const fileInput = document.getElementById('docFile').files[0];
@@ -172,33 +164,49 @@
                 .then((response) => response.json())
                 .then((data) => {
                     const textarea = document.getElementById('result');
-                    textarea.value = data.content.map((item) => item.text).join('\n');
+
+                    const container = document.getElementsByClassName("doc-results")[0];
+                    container.replaceChildren();
+                    data.content.forEach((item, index) => {
+                        const span = document.createElement("span");
+                        span.innerHTML = '페이지' + index + '.';
+                        span.classList.add('doc-page');
+                        container.appendChild(span);
+
+                        const textarea = document.createElement("textarea");
+                        textarea.value = item.text;
+                        textarea.classList.add('form-control');
+                        container.appendChild(textarea);
+                    });
                 })
                 .catch((error) => alert('Error: ' + error));
         });
 
         document.getElementById('summarize-doc').addEventListener('click', function() {
-            const content = document.getElementById('result').value;
-            if (!content.trim()) {
-                alert('요약할 텍스트가 없습니다.');
-                return;
+            const textareas = document.querySelectorAll(".form-control");
+            var count = 0;
+            for (const textarea of textareas) {
+                const content = textarea.value;
+                if (!content.trim()) {
+                    return;
+                }
+                fetch('/summary', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    count++;
+                    textarea.value = data.summary || '요약에 실패했습니다.';
+                })
+                .catch(error => {
+                    count++;
+                    console.error('Error:', error);
+                    if (count === textareas)
+                        alert('요약 중 오류가 발생했습니다.');
+                });
             }
-            fetch('http://localhost:3001/summarize', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content })
-            })
-            .then(response => response.json())
-            .then(data => {
-                const summaryResult = document.getElementById('summaryResult');
-                const summaryOutput = document.getElementById('summaryOutput');
-                summaryOutput.textContent = data.summary || '요약에 실패했습니다.';
-                summaryResult.style.display = 'block';
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('요약 중 오류가 발생했습니다.');
-            });
         });
     </script>
 </body>

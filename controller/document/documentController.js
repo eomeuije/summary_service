@@ -7,10 +7,10 @@ const pdfParser = require('../../service/document/pdfParser');
 const hwpParser = require('../../service/document/hwpParser');
 
 router.post("/upload", upload.single("file"), async (req, res) => {
-    const filePath = req.file.path;
-    const fileExt = path.extname(req.file.originalname).toLowerCase();
   
     try {
+      const filePath = req.file.path;
+      const fileExt = path.extname(req.file.originalname).toLowerCase();
       let pages;
 
       if (fileExt === ".pdf") {
