@@ -31,14 +31,13 @@
 
         .navbar button:hover {
             background-color: #75E6DA;
-            transform: scale(1.1); /* 버튼 커짐 */
+            transform: scale(1.1);
         }
 
-        /* 화살표 강조 */
         .navbar button::after {
-            content: "⬇"; /* 화살표 아이콘 */
+            content: "⬇";
             position: absolute;
-            bottom: -30px; /* 버튼 아래에 위치 */
+            bottom: -30px;
             left: 50%;
             transform: translateX(-50%);
             font-size: 20px;
@@ -49,10 +48,9 @@
 
         .navbar button:hover::after {
             opacity: 1;
-            transform: translateX(-50%) translateY(10px); /* 화살표 위로 이동 */
+            transform: translateX(-50%) translateY(10px);
         }
 
-        /* 헤더 스타일 */
         .header-head {
             background-color: #05445E;
             color: white;
@@ -79,9 +77,8 @@
             text-decoration: underline;
         }
 
-        /* 콘텐츠 스타일 */
         .content {
-            background: linear-gradient(135deg, #189AB4, #75E6DA); /* 그라데이션 배경 */
+            background: linear-gradient(135deg, #189AB4, #75E6DA);
             height: calc(100vh - 80px);
             display: flex;
             flex-direction: column;
@@ -108,9 +105,58 @@
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
             margin-bottom: 40px;
         }
+
+        /* 다크 모드 스타일 */
+        body.dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        body.dark-mode .navbar {
+            background-color: #222831;
+        }
+
+        body.dark-mode .navbar button {
+            background-color: #393E46;
+        }
+
+        body.dark-mode .header-head {
+            background-color: #222831;
+        }
+
+        body.dark-mode .content {
+            background: linear-gradient(135deg, #393E46, #222831);
+        }
+
+        /* 다크 모드 버튼 스타일 */
+        .dark-mode-toggle {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            width: 40px;
+            height: 40px;
+            background-color: #ffffff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black"%3E%3Cpath d="M12 2a10 10 0 1 0 10 10 8 8 0 0 1-10-10z"%3E%3C/path%3E%3C/svg%3E');
+            background-size: 60%;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        body.dark-mode .dark-mode-toggle {
+            background-color: #393E46;
+            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"%3E%3Cpath d="M12 2a10 10 0 1 0 10 10 8 8 0 0 1-10-10z"%3E%3C/path%3E%3C/svg%3E');
+        }
+        
     </style>
 </head>
 <body>
+    <!-- 다크 모드 토글 버튼 -->
+    <button class="dark-mode-toggle" onclick="toggleDarkMode()"></button>
+
     <!-- 헤더 추가 -->
     <div class="header-head">
         <div class="header-locate">
@@ -138,7 +184,6 @@
 
     <script>
         function logout() {
-            // 로그아웃 로직 처리
             fetch('/logout', { method: 'POST' })
                 .then(() => {
                     window.location.href = '/';
@@ -157,6 +202,10 @@
             } else if (page === 'voice') {
                 window.location.href = '/voice-upload';
             }
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
         }
     </script>
 </body>

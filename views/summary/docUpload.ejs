@@ -69,10 +69,58 @@
             font-size: 18px;
             word-wrap: break-word;
         }
+
+        /* 다크 모드 스타일 */
+        body.dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        body.dark-mode .navbar {
+            background-color: #222831;
+        }
+
+        body.dark-mode .navbar button {
+            background-color: #393E46;
+        }
+
+        body.dark-mode .content {
+            background-color: #393E46;
+        }
+
+        body.dark-mode .result-section {
+            background-color: #222831;
+        }
+
+        .dark-mode-toggle {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            width: 40px;
+            height: 40px;
+            background-color: #ffffff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black"%3E%3Cpath d="M12 2a10 10 0 1 0 10 10 8 8 0 0 1-10-10z"%3E%3C/path%3E%3C/svg%3E');
+            background-size: 60%;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        body.dark-mode .dark-mode-toggle {
+            background-color: #393E46;
+            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"%3E%3Cpath d="M12 2a10 10 0 1 0 10 10 8 8 0 0 1-10-10z"%3E%3C/path%3E%3C/svg%3E');
+        }
     </style>
 </head>
 <body>
+    <!-- 다크 모드 토글 버튼 -->
+    <button class="dark-mode-toggle" onclick="toggleDarkMode()"></button>
+
     <div class="navbar">
+        <button onclick="navigateTo('main')">메인화면</button>
         <button onclick="navigateTo('summary')">텍스트 요약</button>
         <button onclick="navigateTo('doc')">문서</button>
         <button onclick="navigateTo('voice')">음성</button>
@@ -89,7 +137,6 @@
 
         <button type="button" id="summarize-doc" class="btn btn-secondary" style="margin-top: 10px;">요약하기</button>
         
-        <!-- 요약 결과를 표시할 새로운 영역 -->
         <div id="summaryResult" class="result-section" style="display: none;">
             <h3>요약 결과</h3>
             <p id="summaryOutput"></p>
@@ -97,8 +144,14 @@
     </div>
 
     <script>
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+        }
+
         function navigateTo(page) {
-            if (page === 'summary') {
+            if (page === 'main') {
+                window.location.href = 'http://localhost:3000/';
+            } else if (page === 'summary') {
                 window.location.href = '/summary-page';
             } else if (page === 'doc') {
                 window.location.href = '/doc-upload';
@@ -119,7 +172,7 @@
                 .then((response) => response.json())
                 .then((data) => {
                     const textarea = document.getElementById('result');
-                    textarea.value = data.content.map((item) => item.text).join('\\n');
+                    textarea.value = data.content.map((item) => item.text).join('\n');
                 })
                 .catch((error) => alert('Error: ' + error));
         });
@@ -146,35 +199,6 @@
                 console.error('Error:', error);
                 alert('요약 중 오류가 발생했습니다.');
             });
-        });
-    </script>
-    </div>
-    <script>
-        function navigateTo(page) {
-            if (page === 'summary') {
-                window.location.href = '/summary-page';
-            } else if (page === 'doc') {
-                window.location.href = '/doc-upload';
-            } else if (page === 'voice') {
-                window.location.href = '/voice-upload';
-            }
-        }
-
-        document.getElementById('docForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const fileInput = document.getElementById('docFile').files[0];
-            const formData = new FormData();
-            formData.append('file', fileInput);
-            fetch('/document/upload', {
-                method: 'POST',
-                body: formData,
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    const textarea = document.getElementById('result');
-                    textarea.value = data.content.map((item) => item.text).join('\n');
-                })
-                .catch((error) => alert('Error: ' + error));
         });
     </script>
 </body>
