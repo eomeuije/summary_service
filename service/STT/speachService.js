@@ -2,10 +2,16 @@ const axios = require('axios');
 const fs = require('fs');
 const FormData = require('form-data');
 
+// 클로바 api 키 초기화
 const CLOVA_SPEECH_INVOKE_URL = process.env.CLOVA_SPEECH_INVOKE_URL;
 const CLOVA_SPEECH_SECRET_KEY = process.env.CLOVA_SPEECH_SECRET_KEY;
 
 const speachService = {
+    /**
+     * 
+     * @param {string} file 음성 파일 경로
+     * @returns {string} 인식 결과 문자열
+     */
     convert_speech_to_text: async (file) => {
         const params = {
             language: 'ko-KR',

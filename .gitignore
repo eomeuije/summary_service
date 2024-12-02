@@ -143,3 +143,4 @@ uploads/
 .ipynb_checkpoints/
 
 __pycache__/
+ai/__pycache__/

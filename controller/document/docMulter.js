@@ -2,7 +2,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
-
+// 업로드 디렉토리 반환
 const getDateString = () => {
   const today = new Date();
   const year = today.getFullYear();
@@ -15,6 +15,7 @@ const getDateString = () => {
   return uploadDirectory;
 };
 
+// 업로드 파일 저장소 정의
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, getDateString());
@@ -25,6 +26,7 @@ const storage = multer.diskStorage({
   },
 });
 
+// 문서 포맷 정의
 const fileFilter = (req, file, cb) => {
   const allowedExtensions = [".pdf"];
   const ext = path.extname(file.originalname).toLowerCase();

@@ -18,6 +18,10 @@ router.post("/upload", upload.single("file"), async (req, res) => {
       console.error(err);
       res.status(500).json({ error: 'File Error' });
     }
+    // 업로드된 파일 삭제
+    fs.unlink(filePath, (err) => {
+      if (err) console.log(err);
+    });
   });
 
 module.exports = router;

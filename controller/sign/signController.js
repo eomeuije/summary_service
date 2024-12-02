@@ -15,13 +15,16 @@ router.post('/in', isNotLoggedIn, passport.authenticate('local', {
   res.send('Login successful');
 });
 
-router.get('/google',
+// 구글 로그인
+router.get('/google', isNotLoggedIn,
   passport.authenticate('google', { scope: ['profile'] })
 );
 
-router.get('/google/callback',
+// 구글 로그인 성공시
+router.get('/google/callback', isNotLoggedIn,
   passport.authenticate('google', { failureRedirect: '/' }),
   (req, res) => {
+    // 로그인시 회원이 아니면 OAUTH2 회원가입 화면으로 이동
     if (req.user.isNewUser) {
       req.session.newUser = req.user;
       res.render('sign/auth/up', { name: req.user.profile.displayName });
@@ -31,7 +34,8 @@ router.get('/google/callback',
   }
 );
 
-router.post('/auth/up', async (req, res) => {
+// OAUTH2 회원가입
+router.post('/auth/up', isNotLoggedIn, async (req, res) => {
   const { name } = req.body;
   const id = req.session.newUser.profile.id;
   let user;

@@ -1,6 +1,8 @@
 const pool = require('./index')
 
+// DB 연결 함수 정의
 const signRepository = {
+    // id로 회원정보 검색
     findUserById: async (id) => {
         try {
             const connection = await pool.getConnection();
@@ -15,7 +17,7 @@ WHERE ID = ?
         }
         await connection.release();
     },
-    
+    // 회원가입
     addSign: async (id, name, password) => {
         try {
             const connection = await pool.getConnection();

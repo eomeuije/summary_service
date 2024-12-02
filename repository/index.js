@@ -1,5 +1,6 @@
 const mariadb = require('mariadb');
 
+// mariadb connection
 const pool = mariadb.createPool({
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,

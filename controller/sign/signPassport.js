@@ -5,9 +5,10 @@ const LocalStrategy = require('passport-local').Strategy;
 const signService = require('../../service/sign/signService')
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
+// 로그인 상태 저장
 const users = [];
 
-
+// 구글 OAUTH2 설정
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_OAUTH_ID,
     clientSecret: process.env.GOOGLE_OAUTH_SECRET,
@@ -59,7 +60,7 @@ passport.deserializeUser((user, done) => {
   done(null, re);
 });
 
-  
+// 로그인된 회원만 다음으로 이동
 function isLoggedIn(req, res, next) {
     if (req.isAuthenticated()) {
       return next();
@@ -67,6 +68,7 @@ function isLoggedIn(req, res, next) {
     res.redirect('/');
 }
 
+// 로그인 되지않은 회원만 다음으로 이동
 function isNotLoggedIn(req, res, next) {
     if (!req.isAuthenticated()) {
       return next();

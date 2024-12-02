@@ -11,10 +11,13 @@ app = Flask(__name__)
 
 PORT = int(os.getenv("FLASK_PORT", 5000))
 
+# 모델, 토크나이저 경로
 summary_model_dir = os.getenv("SUMMARY_MODEL", os.path.join(os.path.dirname(__file__), '..', 'korean_paper_summary'))
 summary_tokenizer_dir = os.getenv("SUMMARY_TOKENIZER", os.path.join(os.path.dirname(__file__), '..', 'korean_paper_summary'))
+# 모델 GPU 할당
 summary_obj = summary_model(summary_model_dir, summary_tokenizer_dir)
 
+# 요약 요청
 @app.route('/summarize', methods=['POST'])
 def summarize():
     data = request.get_json()
@@ -32,4 +35,5 @@ def index():
 if __name__ == '__main__':
     asgi_app = WsgiToAsgi(app)
     import uvicorn
+    # 비동기 서버 실행
     uvicorn.run(asgi_app, port=PORT)
