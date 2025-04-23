@@ -1,3 +1,6 @@
+## 창원대학교 소프트웨어공학 과제
+20학번 엄의제, 이재민, 장민준
+
 ## 보고서
 [https://docs.google.com/document/d/1wh2baH_VieBUMG2sh_qB_8GHnsrlLywy0-94u89GzQ8/edit?usp=sharing](https://docs.google.com/document/d/1wh2baH_VieBUMG2sh_qB_8GHnsrlLywy0-94u89GzQ8/edit?usp=sharing)
 
